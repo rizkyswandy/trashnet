@@ -1,9 +1,10 @@
 name: Train Model
 
 on:
-  workflow_dispatch:  # Manual trigger
-  schedule:
-    - cron: '0 0 * * 0'  # Run weekly
+  workflow_dispatch: 
+  push:
+    branches:
+      - train
 
 jobs:
   train:
@@ -42,7 +43,7 @@ jobs:
         
     - name: Train model
       run: |
-        python scripts/train.py --config configs/config.yaml
+        python train.py --config configs/config.yaml
         
     - name: Upload model artifacts
       uses: actions/upload-artifact@v2

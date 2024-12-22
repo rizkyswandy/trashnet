@@ -103,6 +103,9 @@ export HF_TOKEN='your-token-here'
 ```
 3. Enable model pushing in the config file
 
+## Github Action Workflow: [Link](Github_Action.md)
+
+
 ## Testing
 
 (Not done yet!)
