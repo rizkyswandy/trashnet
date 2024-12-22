@@ -112,7 +112,7 @@ export HF_TOKEN='your-token-here'
 
 ## Huggingface model
 ```bash
-
+https://huggingface.co/aftermath01/trash-classification
 ```
 
 ## Acknowledgments
