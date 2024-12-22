@@ -28,8 +28,8 @@ trashnet-classification/
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/aftermath00/trashnet-classification.git
-cd trashnet-classification
+git clone https://github.com/aftermath00/trashnet.git
+cd trashnet
 ```
 
 2. Create and activate a virtual environment:
