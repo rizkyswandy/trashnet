@@ -1,0 +1,44 @@
+name: Deploy to HuggingFace
+
+on:
+  workflow_run:
+    workflows: ["Train Model"]
+    types:
+      - completed
+  workflow_dispatch:  
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
+    
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.10'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        
+    - name: Download model artifacts
+      uses: actions/download-artifact@v2
+      with:
+        name: model-artifacts
+        path: checkpoints/
+        
+    - name: Login to Hugging Face
+      env:
+        HF_TOKEN: ${{ secrets.HF_TOKEN }}
+      run: |
+        python -c "from huggingface_hub.hf_api import HfApi; HfApi().set_access_token('$HF_TOKEN')"
+        
+    - name: Push to Hugging Face Hub
+      env:
+        HF_TOKEN: ${{ secrets.HF_TOKEN }}
+      run: |
+        python scripts/push_to_hub_http.py

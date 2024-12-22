@@ -1,0 +1,89 @@
+# Model configuration
+num_classes: 6
+class_names: ['cardboard', 'glass', 'metal', 'paper', 'plastic', 'trash']
+
+# Training configuration
+batch_size: 32
+num_workers: 24
+gpu_id: 0
+multi_gpu: true
+
+# Optimizer configuration
+initial_lr: 0.0001
+max_lr: 0.0008
+weight_decay: 0.0005
+div_factor: 25
+final_div_factor: 1000
+
+# Training schedule
+num_epochs: 100
+patience: 15 # wait 15 epochs (just some random estimation based on total epoch)
+cm_interval: 10  # Plot confusion matrix every N epochs
+
+# Class weights for balanced loss
+class_weights: [1.0, 1.2, 1.1, 1.0, 1.3, 1.4] 
+label_smoothing: 0.1
+
+# Checkpointing
+checkpoint_path: 'checkpoints/best_model_2.pth'
+
+# Weights & Biases configuration
+use_wandb: true
+wandb_project: 'TrashNet'
+wandb_run_name: 'trashnet'
+
+# Hugging Face Hub configuration
+push_to_hub: true
+hub_repo_id: 'aftermath01/trash-classification'
+
+
+# Optimizer Configuration:
+
+# 1. Learning Rate Parameters:
+# - initial_lr: 0.0001 (1e-4): # - Conservative starting point to avoid unstable training, tried 0.00075 and 0.0005, 
+#   but the loss isn't decreasing a lot, I'm guessing it's jumping from the expected global minima.
+# - `max_lr: 0.0008` (8e-4):
+#   - Peak learning rate for cyclic learning rate schedule
+#   - 8x higher than initial_lr but still conservative
+# - `div_factor: 25`:
+#   - Provides good range for learning rate warm-up
+
+# - `final_div_factor: 1000`:
+#   - For learning rate annealing at end of training
+#   - Final learning rate = initial_lr/(div_factor * final_div_factor) = 4e-9
+#   - Very small final lr helps fine-tune model
+
+# 2. Weight Decay: `weight_decay: 0.0005`
+#   - Standard L2 regularization strength
+#   - Helps prevent overfitting by penalizing large weights
+#   - Common value that works well in practice (5e-4)
+
+# Training Schedule:
+
+# 1. `num_epochs: 100`:
+# - Allows time for learning rate cycling, a pretty good start (kind of a habbit to start with 100)
+
+# 2. `patience: 15`:
+# - Waits 15 epochs for improvement before stopping and I assume it'll allow convergence possibility
+# - ~15% of total epochs is reasonable for seeing true improvement vs noise
+
+# 3. `cm_interval: 10`:
+# - Plot confusion matrix every 10 epochs
+# - Balances monitoring frequency with training speed
+# - Provides regular checkpoints to assess class-wise performance
+
+# Class Handling:
+
+# 1. Class Weights:
+# ```python
+# class_weights: [1.0, 1.2, 1.1, 1.0, 1.3, 1.4]
+# ```
+# - Compensates for class imbalance
+# - Higher weights (1.3, 1.4) for underrepresented classes
+# - Lower weights (1.0) for well-represented classes
+# - Moderate weights (1.1, 1.2) for slightly underrepresented classes
+
+# 2. `label_smoothing: 0.1`:
+# - Prevents model from becoming over-confident
+# - Converts hard targets (1.0) to soft targets (0.9)
+# - Helps regularization and generalization
